@@ -7,8 +7,7 @@ import {
   MapPin,
   Clock,
   MessageSquare,
-  ArrowRight,
-  Lock
+  ArrowRight
 } from 'lucide-react';
 import type { BusinessSettings } from '../types';
 
@@ -252,12 +251,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
         <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
           <p>© 2026 YANKEY Home Cleaning and Services. All Rights Reserved.</p>
           <div className="flex items-center space-x-6">
-            <span className="text-slate-400">Bibiani, Ghana</span>
-            <span>•</span>
-            <Link to="/admin" className="flex items-center gap-1 text-slate-400 hover:text-slate-200 transition-colors">
-              <Lock className="w-3 h-3" />
-              <span>Admin Portal</span>
-            </Link>
+            <span className="text-slate-400">Bibiani, Western North Region, Ghana</span>
           </div>
         </div>
       </div>

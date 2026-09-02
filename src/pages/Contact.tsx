@@ -52,6 +52,16 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
 
       await saveContactMessage(newMsg);
       setSubmittedSuccess(true);
+
+      const waText = `Hello YANKEY Home Cleaning! My name is ${name.trim()} (${phone.trim()}).\n\n*Message:* ${message.trim()}`;
+      const waUrl = `https://wa.me/233${settings.phone1.replace(/\s+/g, '').replace(/^0/, '')}?text=${encodeURIComponent(waText)}`;
+      
+      setTimeout(() => {
+        try {
+          window.open(waUrl, '_blank');
+        } catch {}
+      }, 500);
+
       setName('');
       setEmail('');
       setPhone('');

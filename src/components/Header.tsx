@@ -6,8 +6,7 @@ import {
   Menu,
   X,
   Sparkles,
-  Calendar,
-  Lock
+  Calendar
 } from 'lucide-react';
 import type { BusinessSettings } from '../types';
 
@@ -195,15 +194,6 @@ export const Header: React.FC<HeaderProps> = ({ settings }) => {
             >
               <Calendar className="w-4 h-4 text-brand-cyan" />
               <span>Request Cleaning Online</span>
-            </Link>
-
-            <Link
-              to="/admin"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center justify-center gap-1.5 py-2 text-xs text-slate-400 hover:text-slate-600"
-            >
-              <Lock className="w-3.5 h-3.5" />
-              <span>Admin Portal</span>
             </Link>
           </div>
         </div>

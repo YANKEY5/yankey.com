@@ -204,6 +204,19 @@ export const Book: React.FC<BookProps> = ({ settings }) => {
       const result = await submitBooking(bookingPayload, photoFiles);
       setSubmittedBooking(result);
       window.scrollTo({ top: 100, behavior: 'smooth' });
+
+      // Automatically launch WhatsApp so Joshua Yankey gets immediate notification on his phone
+      const whatsappText = `Hello YANKEY Home Cleaning! I just submitted an online booking request:\n\n📋 *Ref:* ${result.referenceNumber}\n👤 *Customer:* ${result.customerInfo.fullName}\n📞 *Phone:* ${result.customerInfo.phone}\n🧹 *Service:* ${result.service}\n📍 *Address:* ${result.customerInfo.location}\n📅 *Date & Slot:* ${result.schedule.preferredDate} (${result.schedule.preferredTime})\n💰 *Estimated Rate:* ~GH₵${result.estimatedPrice}\n${result.specialInstructions ? `📝 *Notes:* ${result.specialInstructions}\n` : ''}\nPlease confirm my appointment!`;
+      const directUrl = `https://wa.me/233${settings.phone1.replace(/\s+/g, '').replace(/^0/, '')}?text=${encodeURIComponent(whatsappText)}`;
+      
+      // Open WhatsApp after a brief delay so state updates smoothly
+      setTimeout(() => {
+        try {
+          window.open(directUrl, '_blank');
+        } catch {
+          // Popup blocker fallback handled by UI button
+        }
+      }, 600);
     } catch (err) {
       console.error('Failed to submit booking:', err);
       alert('Could not submit booking. Please try again or reach out on WhatsApp.');
@@ -222,7 +235,7 @@ export const Book: React.FC<BookProps> = ({ settings }) => {
 
   const getConfirmationWhatsappUrl = (): string => {
     if (!submittedBooking) return '';
-    const text = `Hello YANKEY Cleaning, I just submitted an online booking request!\n\n📋 *Reference:* ${submittedBooking.referenceNumber}\n👤 *Name:* ${submittedBooking.customerInfo.fullName}\n🧹 *Service:* ${submittedBooking.service}\n📍 *Location:* ${submittedBooking.customerInfo.location}\n📅 *Date:* ${submittedBooking.schedule.preferredDate} (${submittedBooking.schedule.preferredTime})\n💰 *Estimated Quote:* ~GH₵${submittedBooking.estimatedPrice}\n\nPlease confirm availability!`;
+    const text = `Hello YANKEY Home Cleaning! I just submitted an online booking request:\n\n📋 *Ref:* ${submittedBooking.referenceNumber}\n👤 *Customer:* ${submittedBooking.customerInfo.fullName}\n📞 *Phone:* ${submittedBooking.customerInfo.phone}\n🧹 *Service:* ${submittedBooking.service}\n📍 *Address:* ${submittedBooking.customerInfo.location}\n📅 *Date & Slot:* ${submittedBooking.schedule.preferredDate} (${submittedBooking.schedule.preferredTime})\n💰 *Estimated Rate:* ~GH₵${submittedBooking.estimatedPrice}\n${submittedBooking.specialInstructions ? `📝 *Notes:* ${submittedBooking.specialInstructions}\n` : ''}\nPlease confirm my appointment!`;
     return `https://wa.me/233${settings.phone1.replace(/\s+/g, '').replace(/^0/, '')}?text=${encodeURIComponent(text)}`;
   };
 
