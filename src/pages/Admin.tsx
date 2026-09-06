@@ -19,8 +19,14 @@ import {
   Sparkles,
   DollarSign,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  Check,
+  ArrowRight,
+  Database,
+  CloudOff,
+  AlertTriangle
 } from 'lucide-react';
+import { isFirebaseConfigured, firebaseConfigStatus } from '../firebase';
 import type {
   BusinessSettings,
   Booking,
@@ -324,7 +330,24 @@ export const Admin: React.FC<AdminProps> = ({ settings, onSettingsUpdate }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
+          {isFirebaseConfigured ? (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              Cloud Sync Active
+            </span>
+          ) : (
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[11px] sm:text-xs font-semibold hover:bg-amber-500/30 transition-colors"
+              title="Click to view instructions to sync bookings across all devices"
+            >
+              <CloudOff className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Offline / Demo Mode</span>
+              <span className="sm:hidden">Offline</span>
+            </button>
+          )}
+
           <button
             onClick={loadAllData}
             className="p-2 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 transition-colors text-xs font-semibold flex items-center gap-1.5"
@@ -346,6 +369,31 @@ export const Admin: React.FC<AdminProps> = ({ settings, onSettingsUpdate }) => {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Cloud Sync Warning Banner when not configured */}
+        {!isFirebaseConfigured && (
+          <div className="p-4 sm:p-5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 animate-in fade-in">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-amber-700 mt-0.5">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h4 className="font-bold text-sm sm:text-base text-amber-950">
+                  Why are bookings only arriving on WhatsApp and not appearing here?
+                </h4>
+                <p className="text-xs sm:text-sm text-amber-800 leading-relaxed max-w-3xl">
+                  Your portal is currently in <strong>Local Storage Mode</strong> because Firebase Cloud Database environment variables are not yet configured in your Vercel project. When customers submit a booking from their device, the booking details are forwarded to your WhatsApp, but cannot sync to this portal across devices without Firebase.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setActiveTab('settings')}
+              className="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shrink-0 transition-colors shadow-xs flex items-center gap-1.5"
+            >
+              <span>Connect Firebase in Vercel</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
         {/* Navigation Tabs */}
         <div className="flex overflow-x-auto gap-2 pb-2 border-b border-slate-200 no-scrollbar">
           {[
@@ -1092,6 +1140,125 @@ export const Admin: React.FC<AdminProps> = ({ settings, onSettingsUpdate }) => {
                 </button>
               </div>
             </form>
+
+            {/* Cloud Database (Firebase) & Vercel Setup Section */}
+            <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-soft space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                <div>
+                  <h3 className="font-black text-brand-navy text-lg flex items-center gap-2">
+                    <Database className="w-5 h-5 text-brand-blue" />
+                    Cloud Database (Firebase) & Live Sync Status
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Connect Firebase to receive customer bookings directly on this dashboard from any phone or computer.
+                  </p>
+                </div>
+                <div>
+                  {isFirebaseConfigured ? (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-300">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      Live Cloud Sync Connected
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold border border-amber-300">
+                      <CloudOff className="w-4 h-4 text-amber-600" />
+                      Local Demo Mode (No Cloud DB)
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Status Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_API_KEY</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasApiKey ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Configured</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_PROJECT_ID</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasProjectId ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> {firebaseConfigStatus.projectId}</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_AUTH_DOMAIN</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasAuthDomain ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Configured</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_STORAGE_BUCKET</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasStorageBucket ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Configured</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_MESSAGING_SENDER_ID</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasMessagingSenderId ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Configured</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 text-xs space-y-1">
+                  <div className="text-slate-500 font-semibold">VITE_FIREBASE_APP_ID</div>
+                  <div className="font-bold font-mono">
+                    {firebaseConfigStatus.hasAppId ? (
+                      <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Configured</span>
+                    ) : (
+                      <span className="text-rose-500 flex items-center gap-1"><X className="w-3.5 h-3.5" /> Missing in Vercel</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Step by step guide */}
+              <div className="p-5 rounded-2xl bg-blue-50/80 border border-blue-100 space-y-3 text-xs text-slate-700">
+                <h5 className="font-bold text-sm text-brand-navy flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-brand-blue" />
+                  Quick 4-Step Setup to Receive Bookings on this Dashboard
+                </h5>
+                <ol className="list-decimal list-inside space-y-2 leading-relaxed">
+                  <li>
+                    Go to <strong><a href="https://console.firebase.google.com" target="_blank" rel="noreferrer" className="text-brand-blue underline font-semibold">console.firebase.google.com</a></strong> and click <strong>Add project</strong> (e.g. named <code>yankey-cleaning</code>).
+                  </li>
+                  <li>
+                    In the left menu, click <strong>Build &gt; Firestore Database &gt; Create Database</strong> (choose Test Mode so read/write is enabled).
+                  </li>
+                  <li>
+                    Click the <strong>Project settings gear &gt; General</strong>, scroll down to <strong>Your apps</strong>, click the <strong>Web (&lt;/&gt;)</strong> icon to register the web app and copy the <code>firebaseConfig</code> keys.
+                  </li>
+                  <li>
+                    In your <strong><a href="https://vercel.com/dashboard" target="_blank" rel="noreferrer" className="text-brand-blue underline font-semibold">Vercel Dashboard</a> &gt; Project &gt; Settings &gt; Environment Variables</strong>, add the 6 keys listed above, then go to <strong>Deployments</strong> and click <strong>Redeploy</strong>.
+                  </li>
+                </ol>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -75,7 +75,7 @@ export const getCustomers = async (): Promise<Customer[]> => {
       const snap = await getDocs(collection(db, 'customers'));
       const list: Customer[] = [];
       snap.forEach(d => list.push(d.data() as Customer));
-      if (list.length > 0) return list;
+      return list;
     } catch (e) {
       console.warn('Customer fetch error:', e);
     }
@@ -109,7 +109,7 @@ export const getQuotations = async (): Promise<Quotation[]> => {
       const snap = await getDocs(collection(db, 'quotations'));
       const list: Quotation[] = [];
       snap.forEach(d => list.push(d.data() as Quotation));
-      if (list.length > 0) return list;
+      return list;
     } catch (e) {
       console.warn('Quotations fetch failed:', e);
     }
@@ -149,7 +149,7 @@ export const getInvoices = async (): Promise<Invoice[]> => {
       const snap = await getDocs(collection(db, 'invoices'));
       const list: Invoice[] = [];
       snap.forEach(d => list.push(d.data() as Invoice));
-      if (list.length > 0) return list;
+      return list;
     } catch (e) {
       console.warn('Invoices fetch failed:', e);
     }

@@ -16,8 +16,20 @@ const firebaseConfig = {
 export const isFirebaseConfigured = Boolean(
   import.meta.env.VITE_FIREBASE_API_KEY && 
   import.meta.env.VITE_FIREBASE_PROJECT_ID &&
-  !import.meta.env.VITE_FIREBASE_API_KEY.includes('your_api_key')
+  !import.meta.env.VITE_FIREBASE_API_KEY.includes('your_api_key') &&
+  !import.meta.env.VITE_FIREBASE_API_KEY.includes('AIzaSyMockKeyForLocalPreview')
 );
+
+export const firebaseConfigStatus = {
+  isConfigured: isFirebaseConfigured,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || '',
+  hasApiKey: Boolean(import.meta.env.VITE_FIREBASE_API_KEY && !import.meta.env.VITE_FIREBASE_API_KEY.includes('your_api_key')),
+  hasProjectId: Boolean(import.meta.env.VITE_FIREBASE_PROJECT_ID),
+  hasAuthDomain: Boolean(import.meta.env.VITE_FIREBASE_AUTH_DOMAIN),
+  hasStorageBucket: Boolean(import.meta.env.VITE_FIREBASE_STORAGE_BUCKET),
+  hasMessagingSenderId: Boolean(import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID),
+  hasAppId: Boolean(import.meta.env.VITE_FIREBASE_APP_ID)
+};
 
 // Initialize Firebase App
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();

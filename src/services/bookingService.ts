@@ -86,9 +86,7 @@ export const getBookings = async (): Promise<Booking[]> => {
       snapshot.forEach(docSnap => {
         items.push(docSnap.data() as Booking);
       });
-      if (items.length > 0) {
-        return items;
-      }
+      return items;
     } catch (error) {
       console.warn('Error fetching Firestore bookings, fallback to local:', error);
     }
